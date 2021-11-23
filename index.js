@@ -7,3 +7,8 @@
  * @FilePath: /myReact/index.js
  */
 let a = 2
+function createElement(){
+    return {
+        
+    }
+}
