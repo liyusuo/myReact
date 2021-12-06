@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-12-01 17:37:29
- * @LastEditTime: 2021-12-04 14:52:16
+ * @LastEditTime: 2021-12-06 17:11:44
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /myReact/react-demo/src/react.js
@@ -18,10 +18,11 @@ function createElement(type,config,chidren){
   }
   let props = {...config}
   if(arguments.length > 3){//如果参数的长度大于3，说明有多个子节点
-    props.chidren = Array.prototype.slice.call(arguments,2).map(wrapToVdom)
+    props.children = Array.prototype.slice.call(arguments,2).map(wrapToVdom)
   }else if(arguments.length === 3){
-    props.chidren = wrapToVdom(chidren);//字符串 数字转换成对象
+    props.children = wrapToVdom(chidren);//字符串 数字转换成对象
   }
+
   return {
     $$typeof:REACT_ELEMENT,//元素的类型
     type,//dom标签的类型
