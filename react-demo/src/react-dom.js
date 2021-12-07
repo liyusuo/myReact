@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-12-06 14:55:35
- * @LastEditTime: 2021-12-07 15:12:55
+ * @LastEditTime: 2021-12-07 16:11:11
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /myReact/react-demo/src/react-dom.js
@@ -36,7 +36,11 @@ function createDOM(vdom){
   if(type === REACT_TEXT){//创建文本节点
     dom = document.createTextNode(props.content);
   }else if(typeof type === 'function'){
-    return mountFunctionComponent(vdom)
+    if(type.isReactComponent){
+      return mountClassComponent(vdom)
+    }else{
+      return mountFunctionComponent(vdom)
+    }
   } else if(typeof type === 'string'){
     dom = document.createElement(type)
   }
@@ -52,14 +56,30 @@ function createDOM(vdom){
   vdom.dom = dom;
   return dom
 }
+
+
+
+function mountClassComponent(vdom) {
+  let {type:ClassComponent,props} = vdom
+  let classInstance = new ClassComponent(props); 
+  let renderVdom = classInstance.render();
+  return createDOM(renderVdom)
+}
+
+
+
 function mountFunctionComponent(vdom){
   let {type:functionComponent,props} = vdom
   let renderVdom = functionComponent(props)
   return createDOM(renderVdom)
 }
+
+
 function reconcileChildren(children,parentDom){
   children.forEach(children => mount(children,parentDom));
 }
+
+
 
 function updateProps(dom,oldProps,newProps){
   for(let key in newProps){
