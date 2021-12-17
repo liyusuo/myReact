@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-12-06 14:55:35
- * @LastEditTime: 2021-12-07 16:11:11
+ * @LastEditTime: 2021-12-09 16:49:35
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /myReact/react-demo/src/react-dom.js
@@ -32,6 +32,7 @@ function mount(vdom,container){
  */
 function createDOM(vdom){
   let {type,props} = vdom;
+  console.log('createDOM',vdom)
   let dom;//真实dom
   if(type === REACT_TEXT){//创建文本节点
     dom = document.createTextNode(props.content);
@@ -60,6 +61,7 @@ function createDOM(vdom){
 
 
 function mountClassComponent(vdom) {
+  console.log('mountClassComponent',vdom)
   let {type:ClassComponent,props} = vdom
   let classInstance = new ClassComponent(props); 
   let renderVdom = classInstance.render();

@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-12-01 17:08:58
- * @LastEditTime: 2021-12-07 16:07:36
+ * @LastEditTime: 2021-12-09 16:03:05
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /myReact/react-demo/src/index.js
@@ -22,8 +22,20 @@ import ReactDOM from './react-dom'
 // },'world',));
 
 class ClassComponent extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {number:0};
+  }
+  handleClick = (event)=>{
+    this.setState({number:this.state.number+1});
+  }
   render(){
-    return <div style={{'color':'red'}}>类组件{this.props.name}</div>
+    return(
+      <div>
+        <p>{this.state.number}</p>
+        <button onClick={this.handleClick}>+</button>
+      </div>
+    ) 
   }
 }
 
