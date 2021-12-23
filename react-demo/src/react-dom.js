@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-12-06 14:55:35
- * @LastEditTime: 2021-12-09 16:49:35
+ * @LastEditTime: 2021-12-23 17:17:25
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /myReact/react-demo/src/react-dom.js
@@ -61,10 +61,11 @@ function createDOM(vdom){
 
 
 function mountClassComponent(vdom) {
-  console.log('mountClassComponent',vdom)
   let {type:ClassComponent,props} = vdom
-  let classInstance = new ClassComponent(props); 
+  //把类组件的属性传递给了类组件的构造函数
+  let classInstance = new ClassComponent(props);//创建类组件的实例 
   let renderVdom = classInstance.render();
+  classInstance.oldRenderVdom = renderVdom
   return createDOM(renderVdom)
 }
 
@@ -92,6 +93,8 @@ function updateProps(dom,oldProps,newProps){
       for(let attr in styleObj){
         dom.style[attr]=styleObj[attr];
       }
+    }else if(key.startsWith('on')){
+      dom[key.toLocaleLowerCase()] = newProps[key]
     }else{
       dom[key] = newProps[key];
     }
@@ -102,6 +105,18 @@ function updateProps(dom,oldProps,newProps){
     }
   }
     
+}
+
+/**
+ * 
+ * @param {*} parentDOM 父真实dom
+ * @param {*} oldVdom 老的虚拟dom
+ * @param {*} newVdom 新的虚拟dom
+ */
+export function compareTwoVdom(parentDOM,oldVdom,newVdom) {
+  let oldDOM = oldVdom.dom
+  let newDOM = createDOM(newVdom)
+  parentDOM.replaceChild(newDOM,oldDOM)
 }
 const ReactDOM = {
   render

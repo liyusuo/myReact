@@ -1,12 +1,12 @@
 /*
  * @Author: your name
  * @Date: 2021-12-07 15:50:40
- * @LastEditTime: 2021-12-09 18:31:42
+ * @LastEditTime: 2021-12-23 17:12:11
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /myReact/react-demo/src/component.js
  */
-
+import {compareTwoVdom} from './react-dom'
 class Updater{
   constructor(classInstance){
     this.classInstance = classInstance
@@ -28,12 +28,18 @@ class Updater{
   }
   getState(){
     let {classInstance,pendingStates} = this;
-    let {state} = classInstance;
+    let {state} = classInstance;//老状态
+    pendingStates.forEach(nextState => {
+      state = {...state,...nextState}
+    });
+    pendingStates.length = 0
+    return state
 
   }
 }
 function shouldUpdate(classInstance,nextState) {
-  
+  classInstance.state = nextState
+  classInstance.forceUpdate();
 }
 
 class Component {
@@ -48,6 +54,13 @@ class Component {
 
   setState(partialState){
     this.updater.addState(partialState)
+  }
+  forceUpdate(){
+    let oldRenderVdom = this.oldRenderVdom
+    let oldDOM = oldRenderVdom.dom;
+    let newRenderVdom = this.render()
+    compareTwoVdom(oldDOM.parentNode,oldRenderVdom,newRenderVdom)
+    this.oldRenderVdom = newRenderVdom
   }
 }
 
