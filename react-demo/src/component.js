@@ -1,12 +1,21 @@
 /*
  * @Author: your name
  * @Date: 2021-12-07 15:50:40
- * @LastEditTime: 2021-12-23 17:12:11
+ * @LastEditTime: 2022-01-10 17:16:07
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /myReact/react-demo/src/component.js
  */
 import {compareTwoVdom} from './react-dom'
+export let updateQueue = {
+  isBatchingUpdate : false,//控制更新是同步还是异步
+  updaters:[],//更新数组
+  batchUpdate(){//批量更新
+    updateQueue.updaters.forEach(updater=>updater.updateComponent());
+    updateQueue.isBatchingUpdate = false;
+    updateQueue.updaters.length = 0
+  }
+}
 class Updater{
   constructor(classInstance){
     this.classInstance = classInstance
@@ -18,7 +27,11 @@ class Updater{
     this.emitUpdate();
   }
   emitUpdate(){
-    this.updateComponent();
+    if(updateQueue.isBatchingUpdate){
+      updateQueue.updaters.push(this)
+    }else{
+      this.updateComponent();
+    }
   }
   updateComponent(){
     let {classInstance,pendingStates} = this;
@@ -30,6 +43,9 @@ class Updater{
     let {classInstance,pendingStates} = this;
     let {state} = classInstance;//老状态
     pendingStates.forEach(nextState => {
+      if(typeof nextState === 'function'){
+        nextState = nextState(state)
+      }
       state = {...state,...nextState}
     });
     pendingStates.length = 0

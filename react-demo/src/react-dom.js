@@ -1,13 +1,14 @@
 /*
  * @Author: your name
  * @Date: 2021-12-06 14:55:35
- * @LastEditTime: 2021-12-23 17:17:25
+ * @LastEditTime: 2022-01-10 16:43:16
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /myReact/react-demo/src/react-dom.js
  */
 
-import { REACT_TEXT } from "./constants";
+import { REACT_TEXT , REACT_FORWARD_REF} from "./constants";
+import {addEvent} from'./event'
 
 
 function render(vdom,container){
@@ -31,10 +32,12 @@ function mount(vdom,container){
  * @return 真实dom
  */
 function createDOM(vdom){
-  let {type,props} = vdom;
-  console.log('createDOM',vdom)
+  console.log('vdom',vdom)
+  let {type,props,ref} = vdom;
   let dom;//真实dom
-  if(type === REACT_TEXT){//创建文本节点
+  if(type && type.$$typeof === REACT_FORWARD_REF){
+    return mountForwardComponent(vdom);
+  }else if(type === REACT_TEXT){//创建文本节点
     dom = document.createTextNode(props.content);
   }else if(typeof type === 'function'){
     if(type.isReactComponent){
@@ -55,15 +58,22 @@ function createDOM(vdom){
     }
   }
   vdom.dom = dom;
+  if(ref)ref.current = dom;
   return dom
 }
 
 
+function mountForwardComponent(vdom){
+  let {type,props,ref} = vdom;
+  let renderVdom = type.render(props,ref)
+  return createDOM(renderVdom);
 
+}
 function mountClassComponent(vdom) {
-  let {type:ClassComponent,props} = vdom
+  let {type:ClassComponent,props,ref} = vdom
   //把类组件的属性传递给了类组件的构造函数
   let classInstance = new ClassComponent(props);//创建类组件的实例 
+  if(ref)ref.current = classInstance;
   let renderVdom = classInstance.render();
   classInstance.oldRenderVdom = renderVdom
   return createDOM(renderVdom)
@@ -94,7 +104,9 @@ function updateProps(dom,oldProps,newProps){
         dom.style[attr]=styleObj[attr];
       }
     }else if(key.startsWith('on')){
-      dom[key.toLocaleLowerCase()] = newProps[key]
+      // dom[key.toLocaleLowerCase()] = newProps[key]
+      //不会把事件函数绑定到DOM上，而是会进行事件委托，全部委托到ducument上
+      addEvent(dom,key.toLowerCase(),newProps[key])
     }else{
       dom[key] = newProps[key];
     }

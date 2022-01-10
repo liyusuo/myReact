@@ -11,3 +11,5 @@ export const REACT_ELEMENT = Symbol('react.element');
 
 //文本  字符串或者数字
 export const REACT_TEXT = Symbol('react.text');
+//ref转发
+export const REACT_FORWARD_REF = Symbol('react.forward_ref');
